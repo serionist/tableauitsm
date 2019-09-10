@@ -1,0 +1,16 @@
+body { margin: 0px; }
+
+
+.options-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+
+
+.setting-field-container { margin-top: 20px; }
+.setting-field-container .mdc-text-field { width: 300px; }
+.setting-field-container button { width: 300px; }
+
+
+.error { color: red; }
