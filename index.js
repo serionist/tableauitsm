@@ -19,6 +19,8 @@
     })();  
     
     function openticket(){
+      document.getElementById('open-success').style.display = 'none';
       tableau.extensions.ui.displayDialogAsync("openticket.html", null, { height: 500, width: 500 }).then((closePayload) => {
+        document.getElementById('open-success').style.display = 'block';
       });
     }
