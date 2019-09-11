@@ -1,0 +1,190 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Open ticket - ITSM Integration extension | Tableau London hackathon 2019
+    </title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <link
+      href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link href="/style.css" rel="stylesheet" />
+
+    <!-- Tableau Extensions API Library  -->
+    <!-- library is in the /lib directory -->
+    <script src="/tableau.extensions.1.latest.min.js"></script>
+
+    <!-- Your JavaScript code that uses the Extensions API goes here -->
+    <script src="/openticket.js"></script>
+    <script src="/common.js"></script>
+  </head>
+  <body>
+    <header class="mdc-top-app-bar">
+      <div class="mdc-top-app-bar__row">
+        <section
+          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
+        >
+          <span class="mdc-top-app-bar__title"
+            >Open a ticket in ServiceNow</span
+          >
+        </section>
+      </div>
+    </header>
+    <div class="mdc-top-app-bar--fixed-adjust">
+      <div class="openticket-container">
+        <div class="title-container">
+          <div class="mdc-text-field text-field mdc-text-field--outlined">
+            <input type="text" id="subject" class="mdc-text-field__input" />
+            <div class="mdc-notched-outline mdc-notched-outline--upgraded">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch" style="">
+                <label class="mdc-floating-label" for="text-field-outlined"
+                  >Subject</label
+                >
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          <p
+            id="subject-error"
+            class="error mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
+          ></p>
+        </div>
+
+        <div
+          class="description-container mdc-text-field text-field mdc-text-field--textarea"
+        >
+          <textarea id="description" class="mdc-text-field__input"></textarea>
+          <div class="mdc-notched-outline mdc-notched-outline--upgraded">
+            <div class="mdc-notched-outline__leading"></div>
+            <div class="mdc-notched-outline__notch" style="">
+              <label class="mdc-floating-label" for="textarea-1" style=""
+                >Description</label
+              >
+            </div>
+            <div class="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+
+        <div class="urgency mdc-select mdc-select--outlined">
+          <i class="mdc-select__dropdown-icon"></i>
+          <select id="urgency" class="mdc-select__native-control"
+            ><option value="3">Low</option
+            ><option value="2" selected="selected">Medium</option
+            ><option value="1">High</option></select
+          >
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div class="mdc-notched-outline__leading"></div>
+            <div class="mdc-notched-outline__notch" style="width: 55px;">
+              <label
+                for="outlined"
+                class="mdc-floating-label mdc-floating-label--float-above"
+                style=""
+                >Urgency</label
+              >
+            </div>
+            <div class="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+
+        <div class="impact mdc-select mdc-select--outlined">
+          <i class="mdc-select__dropdown-icon"></i>
+          <select id="impact" class="mdc-select__native-control"
+            ><option value="3">Low</option
+            ><option value="2" selected="selected">Medium</option
+            ><option value="1">High</option></select
+          >
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div class="mdc-notched-outline__leading"></div>
+            <div class="mdc-notched-outline__notch" style="width: 50px;">
+              <label
+                for="outlined"
+                class="mdc-floating-label mdc-floating-label--float-above"
+                style=""
+                >Impact</label
+              >
+            </div>
+            <div class="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+
+        <div class="severity mdc-select mdc-select--outlined">
+          <i class="mdc-select__dropdown-icon"></i>
+          <select id="severity" class="mdc-select__native-control"
+            ><option value="3">Low</option
+            ><option value="2" selected="selected">Medium</option
+            ><option value="1">High</option></select
+          >
+          <div
+            class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+          >
+            <div class="mdc-notched-outline__leading"></div>
+            <div class="mdc-notched-outline__notch" style="width: 55px;">
+              <label
+                for="outlined"
+                class="mdc-floating-label mdc-floating-label--float-above"
+                style=""
+                >Severity</label
+              >
+            </div>
+            <div class="mdc-notched-outline__trailing"></div>
+          </div>
+        </div>
+
+        <div class="submit-container">
+          <button
+            id="submit"
+            class="mdc-button mdc-button--raised"
+            onclick="submit()"
+            disabled
+          >
+            Submit
+          </button>
+
+          <div
+            id="progress"
+            style="display:none;"
+            role="progressbar"
+            class="mdc-linear-progress mdc-linear-progress--indeterminate"
+          >
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div
+              class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+            >
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div
+              class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+            >
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+          </div>
+          <p 
+            id="submit-progress"
+            class="progress mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg">
+        Creating ticket...</p>
+          <p
+            id="submit-error"
+            class="error mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
+          >
+            Tableau extension not initialized
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
