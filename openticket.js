@@ -81,13 +81,14 @@ $(document).ready(function() {
         summary.data.push({
             sheetName: dashboard.worksheets[i].name,
             columns: underlyingData.columns,
-            data: underlyingData.data
+            data: getTopRows(underlyingData.data, 10)
         })
     }
 
     setError("submit-progress", "Uploading technical information");
     try{
-        console.log(summary);
+        let s = JSON.stringify(summary);
+        console.log(s);
         const req = (await fetch(`${baseUrl}api/now/attachment/file?table_name=incident&table_sys_id=${response.result.sys_id}&file_name=technicalinfo.json`, {
             method: 'POST', 
             credentials: 'include',
@@ -96,7 +97,7 @@ $(document).ready(function() {
                 'Content-Type': 'application/json',
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify(summary, null, 2), // body data type must match "Content-Type" header
+            body: s, // body data type must match "Content-Type" header
         }));
         response = await req.json();
     }
@@ -163,6 +164,14 @@ $(document).ready(function() {
         filterType: filter.filterType,
         //field: await filter.getFieldAsync()
     }
+  }
+
+  function getTopRows(array, max) {
+      let ret = [];
+      for (let i = 0; i< Math.min(array.length, max); i++) {
+        ret.push(array[i]);
+      }
+      return ret;
   }
 
  

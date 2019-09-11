@@ -20,6 +20,5 @@
     
     function openticket(){
       tableau.extensions.ui.displayDialogAsync("openticket.html", null, { height: 500, width: 500 }).then((closePayload) => {
-        window.open(closePayload);
       });
     }
