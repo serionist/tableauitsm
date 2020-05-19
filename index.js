@@ -11,7 +11,7 @@
           });
         });
        function configure() { 
-        tableau.extensions.ui.displayDialogAsync("./configuration.html", null, { height: 500, width: 500 });
+        tableau.extensions.ui.displayDialogAsync("configuration.html", null, { height: 500, width: 500 });
       }
 
      
@@ -20,7 +20,7 @@
     
     function openticket(){
       document.getElementById('open-success').style.display = 'none';
-      tableau.extensions.ui.displayDialogAsync("./openticket.html", null, { height: 500, width: 500 }).then((closePayload) => {
+      tableau.extensions.ui.displayDialogAsync("openticket.html", null, { height: 500, width: 500 }).then((closePayload) => {
         document.getElementById('open-success').style.display = 'block';
       });
     }

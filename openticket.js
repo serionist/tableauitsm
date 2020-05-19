@@ -34,13 +34,16 @@ $(document).ready(function() {
     document.getElementById("submit").setAttribute("disabled", "disabled");
     document.getElementById("progress").style.display = "block";
     setError("submit-progress", "Creating ticket...");
+    let dashboard = tableau.extensions.dashboardContent.dashboard;
     const baseUrl = `https://${tableau.extensions.settings.get("instance")}.service-now.com/`
+    const description = `${document.getElementById("description").value}\r\n\r\n\r\nDashboard name: ${dashboard.name}\r\nDashboard URL: ${parent.document.referrer}`;
+    console.log(description);
     const ticketObj = {
         impact: document.getElementById("impact").value,
         severity: document.getElementById("severity").value,
         urgency: document.getElementById("urgency").value,
         short_description: document.getElementById("subject").value,
-        description: document.getElementById("description").value,
+        description: description,
     };
 
     let response;
@@ -62,32 +65,40 @@ $(document).ready(function() {
        return;
     }
     setError("submit-progress", "Ticket created. Generating metadata information...");
-    let dashboard = tableau.extensions.dashboardContent.dashboard;
+    
     const parameters = getParametersInfo(await dashboard.getParametersAsync());
     let sheets = [];
     for (let i = 0;i < dashboard.worksheets.length; i++)
       sheets.push(await getSheetInfo(dashboard.worksheets[i]));
    
+    var _navigator = {};
+    for (var i in navigator) _navigator[i] = navigator[i];
+
+    delete _navigator.plugins;
+    delete _navigator.mimeTypes;    
+
     var summary = {
         dashboardName: dashboard.name,
+        dashboardUrl: parent.document.referrer,
         dashboardSize: dashboard.size,
         dashboardParameters: parameters,
         sheets: sheets,
-        data: []
+        navigator: _navigator
+        //data: []
     };
-    for (let i = 0; i< dashboard.worksheets.length;i++){
-        setError("submit-progress", `Getting underlying data for worksheet: '${dashboard.worksheets[i].name}'...`);
-        const underlyingData = await dashboard.worksheets[i].getUnderlyingDataAsync();
-        summary.data.push({
-            sheetName: dashboard.worksheets[i].name,
-            columns: underlyingData.columns,
-            data: getTopRows(underlyingData.data, 10)
-        })
-    }
+    // for (let i = 0; i< dashboard.worksheets.length;i++){
+    //     setError("submit-progress", `Getting underlying data for worksheet: '${dashboard.worksheets[i].name}'...`);
+    //     const underlyingData = await dashboard.worksheets[i].getUnderlyingDataAsync();
+    //     summary.data.push({
+    //         sheetName: dashboard.worksheets[i].name,
+    //         columns: underlyingData.columns,
+    //         data: getTopRows(underlyingData.data, 10)
+    //     })
+    // }
 
     setError("submit-progress", "Uploading technical information");
     try{
-        let s = JSON.stringify(summary);
+        let s = JSON.stringify(summary, null, 2);
         console.log(s);
         const req = (await fetch(`${baseUrl}api/now/attachment/file?table_name=incident&table_sys_id=${response.result.sys_id}&file_name=technicalinfo.json`, {
             method: 'POST', 
